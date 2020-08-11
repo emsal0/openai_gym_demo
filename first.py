@@ -1,5 +1,6 @@
 from collections import deque
 import gym
+import os
 import numpy as np
 import torch
 import random
@@ -54,7 +55,7 @@ class Agent:
             target_f = self.model(torch.from_numpy(state.astype(np.float32)))
             loss = self.criterion(target_f, torch.Tensor([[reward]]))
 
-            self.model.zero_grad()
+            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
@@ -78,6 +79,7 @@ for o in range(500):
             observation = env.reset()
     print("Final reward for episode {}: {}".format(o, final_reward))
 
-torch.save(agent.model.state_dict(), "cartpolev1_torch_simple.pt")
+output_file = os.environ.get("WEIGHTS_OUTPUT_FILE", "cartpolev1_torch_simple.pt")
+torch.save(agent.model.state_dict(), output_file)
 
 env.close()
